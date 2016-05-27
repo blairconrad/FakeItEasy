@@ -33,7 +33,7 @@ specs = "tests/FakeItEasy.Specs/bin/Release/FakeItEasy.Specs.dll"
 
 approval_tests = "tests/FakeItEasy.Tests.Approval/bin/Release/FakeItEasy.Tests.Approval.dll"
 
-repo = 'FakeItEasy/FakeItEasy'
+repo = 'blairconrad/FakeItEasy'
 release_issue_labels = ['P2', 'build', 'documentation']
 release_issue_body = <<-eos
 **Ready** when all other issues on this milestone are **Done** and closed.
