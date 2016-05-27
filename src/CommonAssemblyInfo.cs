@@ -3,9 +3,9 @@ using System.Reflection;
 using System.Resources;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyVersion("2.0.0")]
-[assembly: AssemblyFileVersion("2.0.0")]
-[assembly: AssemblyInformationalVersion("2.0.0")]
+[assembly: AssemblyVersion("999.999.999")]
+[assembly: AssemblyFileVersion("999.999.999")]
+[assembly: AssemblyInformationalVersion("999.999.999")]
 
 [assembly: AssemblyCompany("Patrik Hägne")]
 [assembly: AssemblyCopyright("Copyright (c) FakeItEasy contributors. (fakeiteasyfx@gmail.com)")]
