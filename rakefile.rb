@@ -35,31 +35,6 @@ approval_tests = "tests/FakeItEasy.Tests.Approval/bin/Release/FakeItEasy.Tests.A
 
 repo = 'FakeItEasy/FakeItEasy'
 release_issue_labels = ['P2', 'build', 'documentation']
-release_issue_body = <<-eos
-**Ready** when all other issues on this milestone are **Done** and closed.
-
-- [ ] run code analysis in VS in *Release* mode and address violations (send a regular PR which must be merged before continuing)
-- [ ] if necessary, change `VERSION_SUFFIX` on [CI Server](http://teamcity.codebetter.com/admin/editBuildParams.html?id=buildType:bt929)
-      to appropriate "-beta123" or "" (for non-betas) value and initiate a build
-- [ ] check build
--  edit draft release in [GitHub UI](https://github.com/FakeItEasy/FakeItEasy/releases):
-    - [ ] complete release notes, mentioning non-owner contributors, if any (move release notes forward from any pre-releases to the current release)
-    - [ ] attach nupkg(s) - main package and/or analyzer, whichever have new content
-    - [ ] publish the release
-- [ ] push NuGet package
-- [ ] de-list pre-release or superseded buggy NuGet packages if present
-- [ ] update website with contributors list (if in place)
-- [ ] tweet, mentioning contributors and post link as comment here for easy retweeting ;-)
-- [ ] post tweet in [Gitter](https://gitter.im/FakeItEasy/FakeItEasy)
-- [ ] post links to the NuGet and GitHub release in each issue in this milestone, with thanks to contributors
-- [ ] run `rake next_version[new_version]` to
-    - create a pull request that changes the version in CommonAssemblyInfo.cs to the expected version (of form _xx.yy.zz_)
-    - create a new milestone for the next release
-    - create a new issue (like this one) for the next release, adding it to the new milestone
-    - create a new draft GitHub Release
-- [ ] close this milestone
-
-eos
 
 release_body = <<-eos
 * **Changed**: _&lt;description&gt;_ - _#&lt;issue number&gt;_
@@ -153,15 +128,8 @@ task :next_version, :new_version do |asm, args|
     )
   puts "Created milestone '#{new_version}'."
 
-  puts "Creating issue '#{release_description}'..."
-  issue = client.create_issue(
-    repo,
-    release_description,
-    release_issue_body,
-    :labels => release_issue_labels,
-    :milestone => milestone.number
-    )
-  puts "Created issue \##{issue.number} '#{release_description}'."
+
+  create_release_checklist_issue(client, repo, release_description, milestone, is_pre_release: false)
 
   puts "Creating release '#{new_version}'..."
   client.create_release(
@@ -172,6 +140,19 @@ task :next_version, :new_version do |asm, args|
     :body => release_body
     )
   puts "Created release '#{new_version}'."
+end
+
+def create_release_checklist_issue(client, repo, release_description, milestone, is_pre_release)
+  puts "Creating issue '#{release_description}'..."
+  is_pre_release = true
+  issue = client.create_issue(
+    repo,
+    release_description,
+    create_release_issue_body(is_pre_release),
+    :labels => release_issue_labels,
+    :milestone => milestone.number
+    )
+  puts "Created issue \##{issue.number} '#{release_description}'."
 end
 
 desc "Update assembly info"
@@ -239,6 +220,45 @@ exec :pack => [:build, output] do |cmd|
   cmd.parameters "pack #{analyzer_nuspec} -Version #{version}#{version_suffix} -OutputDirectory #{output}"
 end
 
+def create_release_issue_body(is_pre_release: false)
+  if is_pre_release
+    next_release_instruction = <<-eos.gsub(/^ {6}/, "").rstrip
+      - [ ] run `rake next_version[new_version]` to
+          - create a pull request that changes the version in CommonAssemblyInfo.cs to the expected version (of form _xx.yy.zz_)
+          - create a new milestone for the next release
+          - create a new issue (like this one) for the next release, adding it to the new milestone
+          - create a new draft GitHub Release
+    eos
+  else
+    next_release_instruction = <<-eos.gsub(/^ {6}/, "").rstrip
+      - if there's to be a new pre-release issue
+        - [ ] run `rake pre_release[version_suffix]` to create a new draft GitHub Release and a new issue (like this one) for the next release, adding it to the current milestone
+        - [ ] change `VERSION_SUFFIX` on the [CI Server](http://teamcity.codebetter.com/admin/editBuildParams.html?id=buildType:bt929)
+      - [ ] close this milestone
+    eos
+  end
+
+  <<-eos.gsub /^ {4}/, ""
+    **in-progress** when all other issues on this milestone are closed.
+
+    - [ ] run code analysis in VS in *Release* mode and address violations (send a regular PR which must be merged before continuing)
+    - [ ] if necessary, change `VERSION_SUFFIX` on the [CI Server](http://teamcity.codebetter.com/admin/editBuildParams.html?id=buildType:bt929)
+          to appropriate "-beta123" or "" (for non-betas) value and initiate a build
+    - [ ] check build
+    -  edit draft release in [GitHub UI](https://github.com/FakeItEasy/FakeItEasy/releases):
+        - [ ] complete release notes, mentioning non-owner contributors, if any (move release notes forward from any pre-releases to the current release)
+        - [ ] attach nupkg(s) - main package and/or analyzer, whichever have new content
+        - [ ] publish the release
+    - [ ] push NuGet package
+    - [ ] de-list pre-release or superseded buggy NuGet packages if present
+    - [ ] update website with contributors list (if in place)
+    - [ ] tweet, mentioning contributors and post link as comment here for easy retweeting ;-)
+    - [ ] post tweet in [Gitter](https://gitter.im/FakeItEasy/FakeItEasy)
+    - [ ] post links to the NuGet and GitHub release in each issue in this milestone, with thanks to contributors
+    #{next_release_instruction}
+  eos
+end
+
 def print_vars(variables)
 
   scalars = []
@@ -264,7 +284,7 @@ def print_vars(variables)
   }
 
   puts
-  vectors.select { |name, value| !['release_body', 'release_issue_body', 'release_issue_labels'].include? name }.each { |name, value|
+  vectors.select { |name, value| !['release_body', 'release_issue_labels'].include? name }.each { |name, value|
     puts "#{name}:"
     puts value.map {|v| "  " + v }
     puts ""
