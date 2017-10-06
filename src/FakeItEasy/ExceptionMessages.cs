@@ -20,14 +20,10 @@
         public static string WrongNumberOfArguments =>
             "The number of arguments does not match the number of parameters of the method.";
 
-        public static string MethodMissmatchWhenPlayingBackRecording =>
-            "The method of the call did not match the method of the recorded call, the recorded sequence is no longer valid.";
-
-        public static string NoMoreRecordedCalls =>
-            "All the recorded calls has been applied, the recorded sequence is no longer valid.";
-
         public static string FakeCreationExceptionDefault =>
             "Unable to create fake object.";
+
+        public static string ArgumentConstraintCannotBeNestedInArgument => "An argument constraint, such as That, Ignored, or _, cannot be nested in an argument.";
 
         public static string WrongConstructorExpressionType(Type actualConstructorType, Type expectedConstructorType) =>
             $"Supplied constructor is for type {actualConstructorType}, but must be for {expectedConstructorType}.";

@@ -9,13 +9,15 @@ namespace FakeItEasy.Tests.Core
 
     public class FakeAsserterTests
     {
-        private readonly List<IFakeObjectCall> calls;
+        private readonly List<ICompletedFakeObjectCall> calls;
         private readonly CallWriter callWriter;
+        private readonly StringBuilderOutputWriter.Factory outputWriterFactory;
 
         public FakeAsserterTests()
         {
-            this.calls = new List<IFakeObjectCall>();
+            this.calls = new List<ICompletedFakeObjectCall>();
             this.callWriter = A.Fake<CallWriter>();
+            this.outputWriterFactory = A.Fake<StringBuilderOutputWriter.Factory>();
         }
 
         [Fact]
@@ -142,16 +144,37 @@ namespace FakeItEasy.Tests.Core
                 .And.Message.Should().StartWith(Environment.NewLine);
         }
 
+        [Fact]
+        public void Exception_message_should_not_contain_matching_call_when_call_is_recorded_after_checking_count()
+        {
+            var asserter = this.CreateAsserter();
+
+            var repeatConstraint = A.Fake<Repeated>();
+
+            // This will cause the call to be recorded after checking the count
+            A.CallTo(() => repeatConstraint.Matches(A<int>._))
+                .Invokes(() => this.StubCalls(1))
+                .Returns(false);
+
+            var exception = Record.Exception(() =>
+                asserter.AssertWasCalled(x => true, outputWriter => { }, repeatConstraint));
+
+            exception.Should().BeAnExceptionOfType<ExpectationException>()
+                .And.Message.Should().Contain("no calls were made to the fake object.");
+        }
+
         private FakeAsserter CreateAsserter()
         {
-            return new FakeAsserter(this.calls, this.callWriter);
+            return new FakeAsserter(this.calls, this.callWriter, this.outputWriterFactory);
         }
 
         private void StubCalls(int numberOfCalls)
         {
             for (int i = 0; i < numberOfCalls; i++)
             {
-                this.calls.Add(A.Fake<IFakeObjectCall>());
+                var call = A.Fake<ICompletedFakeObjectCall>();
+                SequenceNumberManager.RecordSequenceNumber(call);
+                this.calls.Add(call);
             }
         }
     }

@@ -48,7 +48,7 @@ namespace FakeItEasy
         /// <typeparam name="T">The type of the argument.</typeparam>
         /// <param name="manager">The constraint manager to match the constraint.</param>
         /// <returns>A dummy argument value.</returns>
-        public static T IsNotNull<T>(this IArgumentConstraintManager<T> manager) where T : class
+        public static T IsNotNull<T>(this INegatableArgumentConstraintManager<T> manager) where T : class
         {
             Guard.AgainstNull(manager, nameof(manager));
 
@@ -62,7 +62,7 @@ namespace FakeItEasy
         /// <param name="manager">The constraint manager to match the constraint.</param>
         /// <returns>A dummy argument value.</returns>
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This is by design to support the fluent API.")]
-        public static T? IsNotNull<T>(this IArgumentConstraintManager<T?> manager) where T : struct
+        public static T? IsNotNull<T>(this INegatableArgumentConstraintManager<T?> manager) where T : struct
         {
             Guard.AgainstNull(manager, nameof(manager));
 
@@ -142,17 +142,31 @@ namespace FakeItEasy
 
         /// <summary>
         /// The tested argument collection should contain the same elements as the
-        /// as the specified collection.
+        /// specified collection, in the same order.
         /// </summary>
         /// <param name="manager">The constraint manager to match the constraint.</param>
-        /// <param name="value">The sequence to test against.</param>
+        /// <param name="values">The sequence to test against.</param>
         /// <typeparam name="T">The type of argument to constrain.</typeparam>
         /// <returns>A dummy argument value.</returns>
-        public static T IsSameSequenceAs<T>(this IArgumentConstraintManager<T> manager, IEnumerable value) where T : IEnumerable
+        public static T IsSameSequenceAs<T>(this IArgumentConstraintManager<T> manager, IEnumerable values) where T : IEnumerable
         {
+            var list = values.AsList();
             return manager.NullCheckedMatches(
-                x => x.Cast<object>().SequenceEqual(value.Cast<object>()),
-                x => x.Write("specified sequence"));
+                x => x.Cast<object>().SequenceEqual(list),
+                x => x.WriteArgumentValues(list));
+        }
+
+        /// <summary>
+        /// The tested argument collection should contain the same elements as the
+        /// specified collection, in the same order.
+        /// </summary>
+        /// <param name="manager">The constraint manager to match the constraint.</param>
+        /// <param name="values">The sequence to test against.</param>
+        /// <typeparam name="T">The type of argument to constrain.</typeparam>
+        /// <returns>A dummy argument value.</returns>
+        public static T IsSameSequenceAs<T>(this IArgumentConstraintManager<T> manager, params object[] values) where T : IEnumerable
+        {
+            return manager.IsSameSequenceAs((IEnumerable)values);
         }
 
         /// <summary>
@@ -326,7 +340,7 @@ namespace FakeItEasy
         /// </summary>
         /// <param name="manager">The constraint manager.</param>
         /// <returns>A dummy argument value.</returns>
-        public static CancellationToken IsNotCanceled(this IArgumentConstraintManager<CancellationToken> manager)
+        public static CancellationToken IsNotCanceled(this INegatableArgumentConstraintManager<CancellationToken> manager)
         {
             Guard.AgainstNull(manager, nameof(manager));
 

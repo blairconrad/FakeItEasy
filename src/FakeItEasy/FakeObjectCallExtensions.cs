@@ -46,33 +46,6 @@ namespace FakeItEasy
         }
 
         /// <summary>
-        /// Writes the calls in the collection to the specified output writer.
-        /// </summary>
-        /// <typeparam name="T">The type of the calls.</typeparam>
-        /// <param name="calls">The calls to write.</param>
-        /// <param name="writer">The writer to write the calls to.</param>
-        [Obsolete("This feature will be removed in version 4.0.0.")]
-        public static void Write<T>(this IEnumerable<T> calls, IOutputWriter writer) where T : IFakeObjectCall
-        {
-            Guard.AgainstNull(calls, nameof(calls));
-            Guard.AgainstNull(writer, nameof(writer));
-
-            var callWriter = ServiceLocator.Current.Resolve<CallWriter>();
-            callWriter.WriteCalls(calls.Cast<IFakeObjectCall>(), writer);
-        }
-
-        /// <summary>
-        /// Writes all calls in the collection to the console.
-        /// </summary>
-        /// <typeparam name="T">The type of the calls.</typeparam>
-        /// <param name="calls">The calls to write.</param>
-        [Obsolete("This feature will be removed in version 4.0.0.")]
-        public static void WriteToConsole<T>(this IEnumerable<T> calls) where T : IFakeObjectCall
-        {
-            calls.Write(new DefaultOutputWriter(Console.Write));
-        }
-
-        /// <summary>
         /// Gets the description of a call to a fake object.
         /// </summary>
         /// <param name="fakeObjectCall">The call to describe.</param>
@@ -85,23 +58,9 @@ namespace FakeItEasy
 
         private static string GetParametersString(IFakeObjectCall fakeObjectCall)
         {
-            return fakeObjectCall.Arguments.ToCollectionString(x => GetArgumentAsString(x), ", ");
-        }
-
-        private static string GetArgumentAsString(object argument)
-        {
-            if (argument == null)
-            {
-                return "<NULL>";
-            }
-
-            var stringArgument = argument as string;
-            if (stringArgument != null)
-            {
-                return stringArgument.Length > 0 ? $@"""{stringArgument}""" : "<string.Empty>";
-            }
-
-            return argument.ToString();
+            var writer = ServiceLocator.Current.Resolve<StringBuilderOutputWriter>();
+            writer.WriteArgumentValues(fakeObjectCall.Arguments);
+            return writer.Builder.ToString();
         }
     }
 }

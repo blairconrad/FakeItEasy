@@ -6,16 +6,16 @@
 
     internal static class DiagnosticDefinitions
     {
+        internal static readonly ResourceManager ResourceManager =
+            new ResourceManager(
+                ResourceBaseName,
+                typeof(DiagnosticDefinitions).GetTypeInfo().Assembly);
+
 #if CSHARP
         private const string ResourceBaseName = "FakeItEasy.Analyzer.CSharp.Resources";
 #elif VISUAL_BASIC
         private const string ResourceBaseName = "FakeItEasy.Analyzer.VisualBasic.Resources";
 #endif
-
-        private static readonly ResourceManager ResourceManager =
-            new ResourceManager(
-                ResourceBaseName,
-                typeof(DiagnosticDefinitions).GetTypeInfo().Assembly);
 
         public static DiagnosticDescriptor UnusedCallSpecification { get; } =
             CreateDiagnosticDescriptor(
@@ -30,7 +30,7 @@
                 nameof(NonVirtualSetupSpecification),
                 "FakeItEasy0002",
                 "FakeItEasy.Usage",
-                DiagnosticSeverity.Warning,
+                DiagnosticSeverity.Error,
                 true);
 
         public static DiagnosticDescriptor ArgumentConstraintOutsideCallSpec { get; } =
@@ -39,6 +39,22 @@
                 "FakeItEasy0003",
                 "FakeItEasy.Usage",
                 DiagnosticSeverity.Warning,
+                true);
+
+        public static DiagnosticDescriptor ArgumentConstraintNullabilityMismatch { get; } =
+            CreateDiagnosticDescriptor(
+                nameof(ArgumentConstraintNullabilityMismatch),
+                "FakeItEasy0004",
+                "FakeItEasy.Usage",
+                DiagnosticSeverity.Warning,
+                true);
+
+        public static DiagnosticDescriptor ArgumentConstraintTypeMismatch { get; } =
+            CreateDiagnosticDescriptor(
+                nameof(ArgumentConstraintTypeMismatch),
+                "FakeItEasy0005",
+                "FakeItEasy.Usage",
+                DiagnosticSeverity.Error,
                 true);
 
         private static DiagnosticDescriptor CreateDiagnosticDescriptor(
