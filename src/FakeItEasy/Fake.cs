@@ -4,6 +4,7 @@ namespace FakeItEasy
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
+    using FakeItEasy.Configuration;
     using FakeItEasy.Core;
 
     /// <summary>
@@ -47,13 +48,30 @@ namespace FakeItEasy
         /// </summary>
         /// <param name="fakedObject">The faked object to clear the configuration of.</param>
         [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "object", Justification = "The term fake object does not refer to the type System.Object.")]
-        [Obsolete("ClearConfiguration will be removed in version 8.0.0. Prefer to discard the fake and create a new one.")]
+        [Obsolete("ClearConfiguration will be removed in version 8.0.0. Prefer to discard the fake and create a new one. If that's not feasible, use ResetToInitialConfiguration.")]
         public static void ClearConfiguration(object fakedObject)
         {
             Guard.AgainstNull(fakedObject);
 
             var manager = FakeManagerAccessor.GetFakeManager(fakedObject);
             manager.ClearUserRules();
+        }
+
+        /// <summary>
+        /// Resets configuration of the faked object to its state just after creation.
+        /// </summary>
+        /// <param name="fakedObject">The faked object to reset the configuration of.</param>
+        public static void ResetToInitialConfiguration(object fakedObject)
+        {
+            Guard.AgainstNull(fakedObject, nameof(fakedObject));
+
+            var manager = FakeManagerAccessor.TryGetFakeManager(fakedObject);
+            if (manager == null)
+            {
+                throw new FakeConfigurationException(ExceptionMessages.NotRecognizedAsAFake(fakedObject, fakedObject.GetType()));
+            }
+
+            manager.ResetToInitialConfiguration();
         }
 
         /// <summary>

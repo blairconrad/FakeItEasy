@@ -11,6 +11,12 @@ namespace FakeItEasy.Core
             this.CalledNumberOfTimes = calledNumberOfTimes;
         }
 
+        private CallRuleMetadata(CallRuleMetadata other)
+        {
+            this.Rule = other.Rule is IStatefulFakeObjectCallRule statefulRule ? statefulRule.Clone() : other.Rule;
+            this.CalledNumberOfTimes = other.CalledNumberOfTimes;
+        }
+
         /// <summary>
         /// Gets the number of times the rule has been used.
         /// </summary>
@@ -53,5 +59,7 @@ namespace FakeItEasy.Core
         {
             return this.Rule.ToString();
         }
+
+        public CallRuleMetadata Clone() => new(this);
     }
 }

@@ -2,13 +2,46 @@
 
 FakeItEasy exposes a few APIs that aren't commonly needed, but can be useful in certain scenarios.
 
-## Clearing the configuration of a fake
+## Restoring a fake's configuration to its initial state.
 
-To "unconfigure" a fake so it has default behavior, discard the fake and create
-a new one. If this is not feasible, for example because you wish to remove the
-configuration in the middle of a test and the system under test already holds
-the fake, see
+It's generally better to discard a fake and create a new one than to
+"unconfigure" a fake so it has the behavior it did when first created.
+If this is not feasible, consider one of the following approaches.
+
+To alter the behavior of a fake in the middle of a test, it's usually best to
+explicitly indicate how you want the behavior to change. See
 [Changing behavior between calls](changing-behavior-between-calls.md).
+
+If you wish to restore the configuration between tests, but the fake cannot be
+replaced, perhaps because it is held by a dependency injection container, use
+`Fake.ResetToInitialConfiguration`, which will restore the fake to its initial
+configuration (as it was just after creation), preserving
+
+* [strictness](strict-fakes.md),
+* [object wrapping](calling-wrapped-methods.md),
+* [redirecting to base methods](calling-base-methods.md), and
+* other [explicit](creating-fakes.md#explicit-creation-options) or
+  [implicit](implicit-creation-options.md) creation options.
+
+All interceptable members of the Fake (methods, properties, and event handlers) will be restored
+to the original configuration. In addition
+* [read/write property](default-fake-behavior.md#readwrite-properties) values
+will be reset to values set during the fake's creation,
+* [interception listener lists](#intercepting-calls) will be restored to the initial state, and
+* [recorded calls](#getting-the-list-of-calls-made-on-a-fake) made after initial creation will be dropped.
+
+Some [Fake rules](#manipulating-a-fakes-call-rules) that are used to configure Fakes' behavior are stateful, and
+may have been affected by operations performed on the Fake between creation and execution of the `ResetToInitialConfiguration`
+method. If the state is to be restored to what it was at Fake creation time, these rules must implement
+the interface `IStatefulFakeObjectCallRule` which has an additional method
+when compared to `IFakeObjectCallRule`: `Clone`.
+All stateful rules defined by FakeItEasy implement `IStatefulFakeObjectCallRule` already, and we strongly encourage
+any stateful user-defined rules to do so as well, or Fakes using them may retain unwanted state after
+`ResetToInitialConfiguration` is called.
+
+Likewise, some [interception listeners](#intercepting-calls) may be stateful. If any of these are to work with
+`ResetToInitialConfiguration`, they should implement the new `IStatefulInterceptionListener` interface which has an
+additional method when compared to `IInterceptionListener`: `Clone`.
 
 ## Clearing a fake's recorded calls
 

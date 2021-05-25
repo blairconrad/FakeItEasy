@@ -1,4 +1,4 @@
-﻿namespace FakeItEasy.Core
+namespace FakeItEasy.Core
 {
     using System;
     using System.Collections.Generic;
@@ -14,6 +14,18 @@
         {
             this.fakeManager = fakeManager;
             this.registeredEventHandlers = new Dictionary<object, Delegate>();
+        }
+
+        private EventCallHandler(EventCallHandler other)
+        {
+            this.fakeManager = other.fakeManager;
+            var handlers = new Dictionary<object, Delegate>(other.registeredEventHandlers.Count);
+            foreach (var entry in other.registeredEventHandlers)
+            {
+                handlers.Add(entry.Key, (Delegate)entry.Value.Clone());
+            }
+
+            this.registeredEventHandlers = handlers;
         }
 
         public void HandleEventCall(EventCall eventCall)
@@ -34,6 +46,8 @@
                 this.RemoveEventListener(eventCall);
             }
         }
+
+        public EventCallHandler Clone() => new EventCallHandler(this);
 
         private void RemoveEventListener(EventCall call)
         {

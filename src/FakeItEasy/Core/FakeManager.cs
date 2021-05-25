@@ -30,6 +30,9 @@ namespace FakeItEasy.Core
         private readonly LinkedList<CallRuleMetadata> allUserRules;
 
         private EventCallHandler? eventCallHandler;
+        private EventCallHandler? initialEventCallHandler;
+
+        private CallRuleMetadata[]? initialUserRules;
 
         private ConcurrentQueue<CompletedFakeObjectCall> recordedCalls;
 
@@ -209,6 +212,23 @@ namespace FakeItEasy.Core
         }
 
         /// <summary>
+        /// Restore configuration to that of the fake when it was first created.
+        /// </summary>
+        internal virtual void ResetToInitialConfiguration()
+        {
+            lock (this.allUserRules)
+            {
+                this.allUserRules.Clear();
+                foreach (var rule in this.initialUserRules!)
+                {
+                    this.allUserRules.AddLast(rule);
+                }
+            }
+
+            this.eventCallHandler = this.initialEventCallHandler?.Clone();
+        }
+
+        /// <summary>
         /// Removes any recorded calls.
         /// </summary>
         internal virtual void ClearRecordedCalls()
@@ -233,6 +253,28 @@ namespace FakeItEasy.Core
 
                 this.allUserRules.AddAfter(previousNode, CallRuleMetadata.NeverCalled(newRule));
             }
+        }
+
+        /// <summary>
+        /// Take a snapshot of the current user rules, recording them as the "initial" user rules.
+        /// </summary>
+        /// <remarks>
+        /// Should only be called once, immediately after the FakeManager has been initialized.
+        /// Provides the rules that will be used by <see cref="ResetToInitialConfiguration" />.
+        /// </remarks>
+        internal void SnapshotInitialConfiguration()
+        {
+            lock (this.allUserRules)
+            {
+                this.initialUserRules = new CallRuleMetadata[this.allUserRules.Count];
+                int i = 0;
+                foreach (var rule in this.allUserRules)
+                {
+                    this.initialUserRules[i++] = rule.Clone();
+                }
+            }
+
+            this.initialEventCallHandler = this.eventCallHandler?.Clone();
         }
 
         // Apply the best rule to the call. There will always be at least one applicable rule.

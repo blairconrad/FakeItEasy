@@ -9,7 +9,7 @@ namespace FakeItEasy.Core
     public partial class FakeManager
     {
         private class PropertyBehaviorRule
-            : IFakeObjectCallRule
+            : IStatefulFakeObjectCallRule
         {
             private readonly MethodInfo? propertyGetter;
             private readonly MethodInfo? propertySetter;
@@ -20,6 +20,14 @@ namespace FakeItEasy.Core
 
                 this.propertySetter = property.GetSetMethod();
                 this.propertyGetter = property.GetGetMethod(true);
+            }
+
+            private PropertyBehaviorRule(PropertyBehaviorRule other)
+            {
+                this.Indices = other.Indices;
+                this.Value = other.Value;
+                this.propertyGetter = other.propertyGetter;
+                this.propertySetter = other.propertySetter;
             }
 
             public object? Value { get; set; }
@@ -51,6 +59,8 @@ namespace FakeItEasy.Core
 
                 fakeObjectCall.SetReturnValue(this.Value);
             }
+
+            public IStatefulFakeObjectCallRule Clone() => new PropertyBehaviorRule(this);
 
             private static PropertyInfo GetProperty(MethodInfo propertyGetterOrSetter)
             {
