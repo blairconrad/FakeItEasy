@@ -14,4 +14,7 @@
     <Compile Include="IHaveAMethodWithAnAnonymousParameter.fs" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(TargetFramework)' == 'net461'">
+    <Exec Command="call postbuild.bat &quot;$(TargetPath)&quot;" />
+  </Target>
 </Project>
