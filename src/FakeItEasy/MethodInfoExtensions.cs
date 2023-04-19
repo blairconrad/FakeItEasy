@@ -170,8 +170,8 @@ namespace FakeItEasy
             for (int i = 0; i < parameters.Length; i++)
             {
                 AppendParameterSeparator(builder, i);
-                builder
-                    .Append(parameters[i].ParameterType);
+                builder.Append(parameters[i].ParameterType);
+
                 var parameterName = parameters[i].Name;
                 if (parameterName is not null)
                 {
