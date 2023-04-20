@@ -15,6 +15,6 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(TargetFramework)' == 'net461'">
-    <Exec Command="call postbuild.bat &quot;$(TargetPath)&quot;" />
+    <Exec Command="pwsh postbuild.ps1 &quot;$(TargetPath)&quot;" />
   </Target>
 </Project>
