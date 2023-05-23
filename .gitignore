@@ -17,3 +17,5 @@ FakeItEasy.user.props
 Thumbs.db
 *.received.txt
 *.nuget.targets
+
+/src/fakeiteasy_documentation.egg-info/

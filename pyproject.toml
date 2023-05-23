@@ -1,0 +1,17 @@
+[project]
+# We're not building an installable package, so the "name" and "version"
+# properties are not used, but they are required in the "project" section
+# of this file. So we included them.
+name = "fakeiteasy-documentation"
+version = "1.0.0+irrelevant-we-do-not-build-an-installable-package"
+
+dependencies = [
+    "mike == 1.1.2",
+    "mkdocs == 1.4.2",
+    "mkdocs-material == 9.1.3",
+
+    # Security risk: any file can be included as a snippet with pymdown-extensions < 10
+    # https://github.com/advisories/GHSA-jh85-wwv9-24hv
+    # May become unnecessary when mkdocs-material version is bumped.
+    "pymdown-extensions >= 10.0.1",
+]
