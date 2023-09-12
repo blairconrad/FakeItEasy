@@ -15,7 +15,7 @@ namespace FakeItEasy
         /// Gets an argument constraint object that will be used to constrain a method call argument.
         /// </summary>
         [SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes", Justification = "This is a special case where the type parameter acts as an entry point into the fluent api.")]
-        public static INegatableArgumentConstraintManager<T> That =>
+        public static ICapturableArgumentConstraintManager<T> That =>
             ServiceLocator.Resolve<IArgumentConstraintManagerFactory>().Create<T>();
 
         /// <summary>

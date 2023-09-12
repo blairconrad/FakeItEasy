@@ -3,7 +3,7 @@ namespace FakeItEasy.Core
     using System;
 
     internal class DefaultArgumentConstraintManager<T>
-        : INegatableArgumentConstraintManager<T>
+        : ICapturableArgumentConstraintManager<T>
     {
         private readonly Action<IArgumentConstraint> onConstraintCreated;
 
@@ -13,6 +13,12 @@ namespace FakeItEasy.Core
         }
 
         public IArgumentConstraintManager<T> Not => new NotArgumentConstraintManager(this);
+
+        public T IsCapturedTo(CapturedArgument<T> capturedArgument)
+        {
+            this.onConstraintCreated(new CapturesConstraint(capturedArgument));
+            return default!;
+        }
 
         public T Matches(Func<T, bool> predicate, Action<IOutputWriter> descriptionWriter)
         {
@@ -40,6 +46,25 @@ namespace FakeItEasy.Core
                         descriptionWriter.Invoke(x);
                     });
             }
+        }
+
+        private class CapturesConstraint : ITypedArgumentConstraint, IHaveASideEffect
+        {
+            private static readonly ITypedArgumentConstraint InnerConstraint =
+                 new MatchesConstraint(t => true, writer => writer.Write("Ignored"));
+
+            private readonly CapturedArgument<T> capturedArgument;
+
+            public CapturesConstraint(CapturedArgument<T> capturedArgument) =>
+                this.capturedArgument = capturedArgument;
+
+            public Type Type => InnerConstraint.Type;
+
+            public bool IsValid(object? argument) => InnerConstraint.IsValid(argument);
+
+            public void WriteDescription(IOutputWriter writer) => InnerConstraint.WriteDescription(writer);
+
+            public void ApplySideEffect(object? argument) => this.capturedArgument.LastValue = (T)argument!;
         }
 
         private class MatchesConstraint

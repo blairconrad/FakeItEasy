@@ -31,14 +31,14 @@ namespace FakeItEasy
     public static class A<T>
     {
         public static T Ignored { get; }
-        public static FakeItEasy.INegatableArgumentConstraintManager<T> That { get; }
+        public static FakeItEasy.ICapturableArgumentConstraintManager<T> That { get; }
         [System.CLSCompliant(false)]
         public static T _ { get; }
     }
     public static class An<T>
     {
         public static T Ignored { get; }
-        public static FakeItEasy.INegatableArgumentConstraintManager<T> That { get; }
+        public static FakeItEasy.ICapturableArgumentConstraintManager<T> That { get; }
         [System.CLSCompliant(false)]
         public static T _ { get; }
     }
@@ -161,6 +161,11 @@ namespace FakeItEasy
         public static TInterface Invokes<TInterface, T1, T2, T3, T4, T5, T6, T7>(this FakeItEasy.Configuration.ICallbackConfiguration<TInterface> configuration, System.Action<T1, T2, T3, T4, T5, T6, T7> actionToInvoke) { }
         public static TInterface Invokes<TInterface, T1, T2, T3, T4, T5, T6, T7, T8>(this FakeItEasy.Configuration.ICallbackConfiguration<TInterface> configuration, System.Action<T1, T2, T3, T4, T5, T6, T7, T8> actionToInvoke) { }
     }
+    public class CapturedArgument<T>
+    {
+        public CapturedArgument() { }
+        public T LastValue { get; }
+    }
     public static class CompletedFakeObjectCallExtensions
     {
         public static System.Collections.Generic.IEnumerable<FakeItEasy.Core.ICompletedFakeObjectCall> Matching<TFake>(this System.Collections.Generic.IEnumerable<FakeItEasy.Core.ICompletedFakeObjectCall> calls, System.Linq.Expressions.Expression<System.Action<TFake>> callSpecification) { }
@@ -265,6 +270,10 @@ namespace FakeItEasy
     public interface IBootstrapper
     {
         System.Collections.Generic.IEnumerable<string> GetAssemblyFileNamesToScanForExtensions();
+    }
+    public interface ICapturableArgumentConstraintManager<T> : FakeItEasy.IArgumentConstraintManager<T>, FakeItEasy.IHideObjectMembers, FakeItEasy.INegatableArgumentConstraintManager<T>
+    {
+        T IsCapturedTo(FakeItEasy.CapturedArgument<T> capturedArgument);
     }
     public interface IDummyFactory
     {
