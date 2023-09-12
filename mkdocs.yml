@@ -69,7 +69,9 @@ nav:
   - Calling base methods: calling-base-methods.md
   - Calling wrapped methods: calling-wrapped-methods.md
   - Changing behavior between calls: changing-behavior-between-calls.md
-- Argument constraints: argument-constraints.md
+- Argument constraints: 
+  - Argument constraints: argument-constraints.md
+  - Capturing arguments: capturing-arguments.md
 - Assertion:
   - Assertion: assertion.md
   - Ordered assertions: ordered-assertions.md
