@@ -64,7 +64,7 @@ namespace FakeItEasy.Core
 
             public void WriteDescription(IOutputWriter writer) => InnerConstraint.WriteDescription(writer);
 
-            public void ApplySideEffect(object? argument) => this.capturedArgument.LastValue = (T)argument!;
+            public void ApplySideEffect(object? argument) => this.capturedArgument.Add((T)argument!);
         }
 
         private class MatchesConstraint

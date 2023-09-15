@@ -22,7 +22,7 @@ While there are other ways to ensure that a particular list is passed
 to a method, we'll pretend there aren't and capture the second argument
 to `log` in a `CapturedArgument`, then verify it.
 
-```csharp title="simple capture" linenums="1"  hl_lines="2 7 16"
+```csharp title="simple capture" linenums="1"  hl_lines="2 7 17 22"
 --8<--
 recipes/FakeItEasy.Recipes.CSharp/CapturingArguments.cs:SimpleCapture
 --8<--
@@ -32,7 +32,8 @@ This is a fairly standard test with fakes, except we:
 
 * create a `CapturedArgument` variable to store a captured argument value
 * use `An<>.That.IsCapturedTo` to create a "capturing constraint" that matches any value
-* use `LastValue` to access the captured value so it can be asserted
+* use `Values` to access all the captured values so they can be asserted
+* (alternative flow) use `GetLastValue` to access the most recent captured value so it can be asserted
 
 ???+ note "Values are only captured if the call matches the configuration"
     When a call configuration includes one or more argument-capturing constraints, the argument
@@ -44,9 +45,6 @@ This is a fairly standard test with fakes, except we:
 Capturing arguments is fairly limited right now. In particular, it suffers from these deficiencies:
 
 * there is no way to both capture an argument and constrain by its value
-* ony the last argument captured is retained
-* there's no way to tell from the `CapturedArgument` whether no value was captured or the type's
-  default value was
 * argument capture is shallow; there's no copying of object state.
   If a reference-based argument (e.g. a class instance, not a struct) is captured and
   subsequently modified by the test or production code, the updated state will be seen

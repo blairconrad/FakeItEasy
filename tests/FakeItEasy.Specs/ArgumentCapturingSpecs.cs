@@ -24,8 +24,8 @@ namespace FakeItEasy.Specs
             "When the method is called"
                 .x(() => fake.Invoke(354897));
 
-            "Then the captured argument instance's LastValue matches the input"
-                .x(() => capturedArgument.LastValue.Should().Be(354897));
+            "Then the captured argument instance's last value matches the input"
+                .x(() => capturedArgument.GetLastValue().Should().Be(354897));
         }
 
         [Scenario]
@@ -44,8 +44,8 @@ namespace FakeItEasy.Specs
             "When the method is called"
                 .x(() => fake.Invoke(798453));
 
-            "Then the captured argument instance's LastValue matches the input"
-                .x(() => capturedArgument.LastValue.Should().Be(798453));
+            "Then the captured argument instance's last value matches the input"
+                .x(() => capturedArgument.GetLastValue().Should().Be(798453));
         }
 
         [Scenario]
@@ -80,7 +80,28 @@ namespace FakeItEasy.Specs
 
         [Scenario]
         public static void ValueNotCapturedOnRuleMismatch(
-            Action<int, string> fake, CapturedArgument<int> capturedArgument)
+            Action<int, string> fake, CapturedArgument<int> capturedArgument, Exception exception)
+        {
+            "Given a fake"
+                .x(() => fake = A.Fake<Action<int, string>>());
+
+            "And a capturedArgument instance"
+                .x(() => capturedArgument = new CapturedArgument<int>());
+
+            "And a fake method with 2 parameters is configured to capture an argument to that instance"
+                .x(() => A.CallTo(() => fake.Invoke(An<int>.That.IsCapturedTo(capturedArgument), "matching"))
+                            .DoesNothing());
+
+            "When the method is called with non-matching arguments"
+                .x(() => fake.Invoke(354897, "not matching"));
+
+            "Then no values are captured"
+                .x(() => capturedArgument.Values.Should().BeEmpty());
+        }
+
+        [Scenario]
+        public static void GetLastValueThrowsAfterNoCaptures(
+            Action<int, string> fake, CapturedArgument<int> capturedArgument, Exception exception)
         {
             "Given a fake"
                 .x(() => fake = A.Fake<Action<int, string>>());
@@ -95,8 +116,39 @@ namespace FakeItEasy.Specs
             "When the method is called with non-matching arguments"
                 .x(() => fake.Invoke(354897, "not matching"));
 
-            "Then no argument is captured"
-                .x(() => capturedArgument.LastValue.Should().Be(0));
+            "And we try to get the last captured value"
+                .x(() => exception = Record.Exception(() => capturedArgument.GetLastValue()));
+
+            "Then an exception is thrown"
+                .x(() => exception.Should()
+                    .BeAnExceptionOfType<ExpectationException>()
+                    .WithMessage("No values were captured."));
+        }
+
+        [Scenario]
+        public static void CaptureArgumentsFromMultipleCalls(Action<int> fake, CapturedArgument<int> capturedArgument)
+        {
+            "Given a fake"
+                .x(() => fake = A.Fake<Action<int>>());
+
+            "And a capturedArgument instance"
+                .x(() => capturedArgument = new CapturedArgument<int>());
+
+            "And a fake method is configured to capture its argument to that instance"
+                .x(() => A.CallTo(() => fake.Invoke(A<int>.That.IsCapturedTo(capturedArgument)))
+                            .DoesNothing());
+
+            "When the method is called"
+                .x(() => fake.Invoke(589711));
+
+            "And the method is called again"
+                .x(() => fake.Invoke(846722));
+
+            "And the method is called yet again"
+                .x(() => fake.Invoke(359633));
+
+            "Then the captured argument instance's values match the inputs"
+                .x(() => capturedArgument.Values.Should().BeEquivalentTo(589711, 846722, 359633));
         }
     }
 }
