@@ -1,12 +1,12 @@
 namespace FakeItEasy
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Enables capture of argument constraints.
     /// </summary>
     /// <typeparam name="T">The type of argument to capture and/or constrain.</typeparam>
+    [CLSCompliant(false)]
     public interface ICapturableArgumentConstraintManager<T> : INegatableArgumentConstraintManager<T>
     {
         /// <summary>
@@ -20,7 +20,6 @@ namespace FakeItEasy
         /// values are only captured if the call is triggered. If an incoming call does not match what's
         /// configured for the method or property, no arguments are captured.
         /// </remarks>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1623:PropertySummaryDocumentationMustMatchAccessors", Justification = "Fluent API.")]
-        T IsCapturedTo(CapturedArgument<T> capturedArgument);
+        ICapturingArgumentConstraintManager<T> IsCapturedTo(CapturedArgument<T> capturedArgument);
     }
 }

@@ -24,7 +24,7 @@ public class CapturingArguments
         var logger = A.Fake<IListLogger>();
         A.CallTo(() => logger.Log(
                 "after popping",
-                An<IEnumerable<string>>.That.IsCapturedTo(capturedLists)))
+                An<IEnumerable<string>>.That.IsCapturedTo(capturedLists)._))
             .DoesNothing();
 
         var popper = new Popper(logger);
@@ -42,6 +42,34 @@ public class CapturingArguments
         capturedLists.GetLastValue().Should().BeEquivalentTo(
             new[] { "ate", "nine" });
         //// --8<-- [end:SimpleCapture]
+    }
+
+    [Fact]
+    public void CaptureInputThatContainsThree()
+    {
+        //// --8<-- [start:ConstrainedCapture]
+        // Arrange
+        var capturedLists = new CapturedArgument<IEnumerable<string>>();
+
+        var logger = A.Fake<IListLogger>();
+        A.CallTo(() => logger.Log(
+                "after popping",
+                An<IEnumerable<string>>.That.IsCapturedTo(capturedLists)
+                                       .And.Contains("three")))
+            .DoesNothing();
+
+        var popper = new Popper(logger);
+
+        // Act
+        popper.PopOne(new List<string> { "one", "two", "three", "four" });
+        popper.PopOne(new List<string> { "seven", "ate", "nine" });
+        popper.PopOne(new List<string> { "five", "three" });
+
+        // Assert
+        capturedLists.Values.Should().BeEquivalentTo(
+            new[] { "two", "three", "four" },
+            new[] { "three" });
+        //// --8<-- [end:ConstrainedCapture]
     }
 
     //// --8<-- [start:Popper]

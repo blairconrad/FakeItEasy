@@ -1,24 +1,35 @@
 namespace FakeItEasy.Core
 {
     using System;
+    using System.Data;
 
     internal class DefaultArgumentConstraintManager<T>
-        : ICapturableArgumentConstraintManager<T>
+        : ICapturableArgumentConstraintManager<T>,
+          ICapturingArgumentConstraintManager<T>
     {
-        private readonly Action<IArgumentConstraint> onConstraintCreated;
+        private readonly Action<MatchesConstraint> onConstraintCreated;
 
         public DefaultArgumentConstraintManager(Action<IArgumentConstraint> onConstraintCreated)
+            : this((MatchesConstraint constraint) => onConstraintCreated(constraint))
         {
+        }
+
+        private DefaultArgumentConstraintManager(Action<MatchesConstraint> onConstraintCreated) =>
             this.onConstraintCreated = onConstraintCreated;
-        }
 
-        public IArgumentConstraintManager<T> Not => new NotArgumentConstraintManager(this);
+        public INegatableArgumentConstraintManager<T> And => this;
 
-        public T IsCapturedTo(CapturedArgument<T> capturedArgument)
-        {
-            this.onConstraintCreated(new CapturesConstraint(capturedArgument));
-            return default!;
-        }
+        public IArgumentConstraintManager<T> Not =>
+            new DefaultArgumentConstraintManager<T>(
+                constraint => this.onConstraintCreated(new NotMatchesConstraint(constraint)));
+
+        public T Ignored => this.Matches(x => true, x => x.Write(nameof(this.Ignored)));
+
+        public T _ => this.Ignored;
+
+        public ICapturingArgumentConstraintManager<T> IsCapturedTo(CapturedArgument<T> capturedArgument) =>
+            new DefaultArgumentConstraintManager<T>(
+                constraint => this.onConstraintCreated(new CapturesConstraint(constraint, capturedArgument)));
 
         public T Matches(Func<T, bool> predicate, Action<IOutputWriter> descriptionWriter)
         {
@@ -26,43 +37,29 @@ namespace FakeItEasy.Core
             return default!;
         }
 
-        private class NotArgumentConstraintManager
-            : IArgumentConstraintManager<T>
+        private class NotMatchesConstraint : MatchesConstraint
         {
-            private readonly IArgumentConstraintManager<T> parent;
-
-            public NotArgumentConstraintManager(IArgumentConstraintManager<T> parent)
+            public NotMatchesConstraint(MatchesConstraint constraint)
+                : base(
+                      argument => !constraint.IsValid(argument),
+                      writer =>
+                      {
+                          writer.Write("not ");
+                          constraint.WriteBareDescription(writer);
+                      })
             {
-                this.parent = parent;
-            }
-
-            public T Matches(Func<T, bool> predicate, Action<IOutputWriter> descriptionWriter)
-            {
-                return this.parent.Matches(
-                    x => !predicate(x),
-                    x =>
-                    {
-                        x.Write("not ");
-                        descriptionWriter.Invoke(x);
-                    });
             }
         }
 
-        private class CapturesConstraint : ITypedArgumentConstraint, IHaveASideEffect
+        private class CapturesConstraint : MatchesConstraint, IHaveASideEffect
         {
-            private static readonly ITypedArgumentConstraint InnerConstraint =
-                 new MatchesConstraint(t => true, writer => writer.Write("Ignored"));
-
             private readonly CapturedArgument<T> capturedArgument;
 
-            public CapturesConstraint(CapturedArgument<T> capturedArgument) =>
+            public CapturesConstraint(MatchesConstraint constraint, CapturedArgument<T> capturedArgument)
+                : base(argument => constraint.IsValid(argument), constraint.WriteBareDescription)
+            {
                 this.capturedArgument = capturedArgument;
-
-            public Type Type => InnerConstraint.Type;
-
-            public bool IsValid(object? argument) => InnerConstraint.IsValid(argument);
-
-            public void WriteDescription(IOutputWriter writer) => InnerConstraint.WriteDescription(writer);
+            }
 
             public void ApplySideEffect(object? argument) => this.capturedArgument.Add((T)argument!);
         }
@@ -85,22 +82,14 @@ namespace FakeItEasy.Core
 
             public override string ToString() => this.GetDescription();
 
-            void IArgumentConstraint.WriteDescription(IOutputWriter writer)
+            public void WriteDescription(IOutputWriter writer)
             {
-                writer.Write("<");
-                try
-                {
-                    this.descriptionWriter.Invoke(writer);
-                }
-                catch (Exception ex)
-                {
-                    throw new UserCallbackException(ExceptionMessages.UserCallbackThrewAnException("Argument matcher description"), ex);
-                }
-
-                writer.Write(">");
+                writer.Write('<');
+                this.WriteBareDescription(writer);
+                writer.Write('>');
             }
 
-            bool IArgumentConstraint.IsValid(object? argument)
+            public bool IsValid(object? argument)
             {
                 if (!IsValueValidForType(argument))
                 {
@@ -114,6 +103,18 @@ namespace FakeItEasy.Core
                 catch (Exception ex)
                 {
                     throw new UserCallbackException(ExceptionMessages.UserCallbackThrewAnException($"Argument matcher {this.GetDescription()}"), ex);
+                }
+            }
+
+            public void WriteBareDescription(IOutputWriter writer)
+            {
+                try
+                {
+                    this.descriptionWriter.Invoke(writer);
+                }
+                catch (Exception ex)
+                {
+                    throw new UserCallbackException(ExceptionMessages.UserCallbackThrewAnException("Argument matcher description"), ex);
                 }
             }
 

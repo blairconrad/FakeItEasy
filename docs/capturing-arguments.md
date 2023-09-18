@@ -40,12 +40,21 @@ This is a fairly standard test with fakes, except we:
     values are only captured if the call is triggered. If an incoming call does not match that
     configured for the method or property, no arguments are captured.
 
-## Limitations
+## Capturing and constraining at the same time
 
-Capturing arguments is fairly limited right now. In particular, it suffers from these deficiencies:
+Even though you can interrogate captured values after the fact, you may want to configure
+fake behavior to take effect only when incoming arguments meet a constraint. You can do this
+using syntax similar to that of non-capturing constraints.
 
-* there is no way to both capture an argument and constrain by its value
-* argument capture is shallow; there's no copying of object state.
-  If a reference-based argument (e.g. a class instance, not a struct) is captured and
-  subsequently modified by the test or production code, the updated state will be seen
-  during the "assert" phase of the test.
+```csharp title="constrained capture" linenums="1" hl_lines="7 8"
+--8<--
+recipes/FakeItEasy.Recipes.CSharp/CapturingArguments.cs:ConstrainedCapture
+--8<--
+```
+
+## Limitation: mutable arguments
+
+Argument capture is shallow; there's no copying of object state.
+If a reference-based argument (e.g. a class instance, not a struct) is captured and
+subsequently modified by the test or production code, the updated state will be seen
+during the "assert" phase of the test.

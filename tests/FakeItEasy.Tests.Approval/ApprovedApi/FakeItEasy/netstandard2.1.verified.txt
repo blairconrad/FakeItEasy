@@ -28,6 +28,7 @@ namespace FakeItEasy
         public static T Fake<T>(System.Action<FakeItEasy.Creation.IFakeOptions<T>> optionsBuilder)
             where T :  class { }
     }
+    [System.CLSCompliant(false)]
     public static class A<T>
     {
         public static T Ignored { get; }
@@ -35,6 +36,7 @@ namespace FakeItEasy
         [System.CLSCompliant(false)]
         public static T _ { get; }
     }
+    [System.CLSCompliant(false)]
     public static class An<T>
     {
         public static T Ignored { get; }
@@ -272,9 +274,18 @@ namespace FakeItEasy
     {
         System.Collections.Generic.IEnumerable<string> GetAssemblyFileNamesToScanForExtensions();
     }
+    [System.CLSCompliant(false)]
     public interface ICapturableArgumentConstraintManager<T> : FakeItEasy.IArgumentConstraintManager<T>, FakeItEasy.IHideObjectMembers, FakeItEasy.INegatableArgumentConstraintManager<T>
     {
-        T IsCapturedTo(FakeItEasy.CapturedArgument<T> capturedArgument);
+        FakeItEasy.ICapturingArgumentConstraintManager<T> IsCapturedTo(FakeItEasy.CapturedArgument<T> capturedArgument);
+    }
+    [System.CLSCompliant(false)]
+    public interface ICapturingArgumentConstraintManager<T>
+    {
+        FakeItEasy.INegatableArgumentConstraintManager<T> And { get; }
+        T Ignored { get; }
+        [System.CLSCompliant(false)]
+        T _ { get; }
     }
     public interface IDummyFactory
     {

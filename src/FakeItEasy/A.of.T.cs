@@ -9,6 +9,7 @@ namespace FakeItEasy
     /// </summary>
     /// <typeparam name="T">The type of argument to validate.</typeparam>
     /// <remarks>If desired, <see cref="An{T}"/> may be used to specify constraints on types whose names begin with a vowel sound.</remarks>
+    [CLSCompliant(false)]
     public static class A<T>
     {
         /// <summary>
