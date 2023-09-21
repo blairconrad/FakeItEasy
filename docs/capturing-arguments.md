@@ -52,9 +52,56 @@ recipes/FakeItEasy.Recipes.CSharp/CapturingArguments.cs:ConstrainedCapture
 --8<--
 ```
 
-## Limitation: mutable arguments
+## Capturing mutable arguments
+
+### The challenge
 
 Argument capture is shallow; there's no copying of object state.
 If a reference-based argument (e.g. a class instance, not a struct) is captured and
 subsequently modified by the test or production code, the updated state will be seen
 during the "assert" phase of the test.
+
+```csharp title="mutating captured values" linenums="1" hl_lines="13 14 15 21 22"
+--8<--
+recipes/FakeItEasy.Recipes.CSharp/CapturingArguments.cs:NaivelyCaptureMutatedList
+--8<--
+```
+
+Here a single list instance is twice passed to the production code, which removes
+the first element each time. The `CapturedArgument` captures a reference to the list each
+time, but does not preserve the internals of the list. So by the time the `Values` are examined,
+the list has had its first two elements removed, and this is reflected in the failing assertion.
+
+It's the same effect as if the following were run:
+
+```c#
+var list = new List<int> { 1, 2, 3 };
+var a = list;
+list.RemoveAt(0);
+var b = list;
+
+// both a and b point to a list with elements {2, 3}
+```
+
+### Capturing frozen state
+
+`CapturedArgument`s can be created with a transforming function (or "freezer") that runs on the
+argument value before saving it away. This behavior can be used to insulate the captured values
+from subsequent mutations.
+
+```csharp title="freezing state of captured values" linenums="1" hl_lines="2 3"
+--8<--
+recipes/FakeItEasy.Recipes.CSharp/CapturingArguments.cs:CaptureCopiedMutatedList
+--8<--
+```
+
+You can even transform values into a different type:
+
+```csharp title="freezing state of captured values as new type" linenums="1" hl_lines="2 3 19 20"
+--8<--
+recipes/FakeItEasy.Recipes.CSharp/CapturingArguments.cs:CaptureCopiedMutatedListToNewType
+--8<--
+```
+
+Aside from changing the freezer function, the `CapturedArgument` needs to have the typeparams
+supplied for the argument value and the captured value.

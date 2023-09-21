@@ -1,7 +1,6 @@
 namespace FakeItEasy.Core
 {
     using System;
-    using System.Data;
 
     internal class DefaultArgumentConstraintManager<T>
         : ICapturableArgumentConstraintManager<T>,
@@ -27,9 +26,9 @@ namespace FakeItEasy.Core
 
         public T _ => this.Ignored;
 
-        public ICapturingArgumentConstraintManager<T> IsCapturedTo(CapturedArgument<T> capturedArgument) =>
+        public ICapturingArgumentConstraintManager<T> IsCapturedTo<TCap>(CapturedArgument<T, TCap> capturedArgument) =>
             new DefaultArgumentConstraintManager<T>(
-                constraint => this.onConstraintCreated(new CapturesConstraint(constraint, capturedArgument)));
+                constraint => this.onConstraintCreated(new CapturesConstraint<TCap>(constraint, capturedArgument)));
 
         public T Matches(Func<T, bool> predicate, Action<IOutputWriter> descriptionWriter)
         {
@@ -51,11 +50,11 @@ namespace FakeItEasy.Core
             }
         }
 
-        private class CapturesConstraint : MatchesConstraint, IHaveASideEffect
+        private class CapturesConstraint<TCap> : MatchesConstraint, IHaveASideEffect
         {
-            private readonly CapturedArgument<T> capturedArgument;
+            private readonly CapturedArgument<T, TCap> capturedArgument;
 
-            public CapturesConstraint(MatchesConstraint constraint, CapturedArgument<T> capturedArgument)
+            public CapturesConstraint(MatchesConstraint constraint, CapturedArgument<T, TCap> capturedArgument)
                 : base(argument => constraint.IsValid(argument), constraint.WriteBareDescription)
             {
                 this.capturedArgument = capturedArgument;

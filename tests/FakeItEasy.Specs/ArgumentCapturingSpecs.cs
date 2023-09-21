@@ -1,6 +1,8 @@
 namespace FakeItEasy.Specs
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using FakeItEasy.Tests.TestHelpers;
     using FluentAssertions;
     using Xbehave;
@@ -271,6 +273,67 @@ namespace FakeItEasy.Specs
     1: System.Action`2[System.Int32,System.Int32].Invoke(arg1: -354897, arg2: 3)
 
 "));
+        }
+
+        [Scenario]
+        public static void CaptureMutatingArgument(
+            Action<IList<int>> fake, IList<int> listOfInts, CapturedArgument<IList<int>> capturedArgument)
+        {
+            "Given a fake"
+                .x(() => fake = A.Fake<Action<IList<int>>>());
+
+            "And a capturedArgument instance"
+                .x(() => capturedArgument = new CapturedArgument<IList<int>>(Enumerable.ToList));
+
+            "And a fake method is configured to capture its argument to that instance"
+                .x(() => A.CallTo(() => fake.Invoke(A<IList<int>>.That.IsCapturedTo(capturedArgument)._))
+                            .DoesNothing());
+
+            "And mutable variable that will be input to the method"
+                .x(() => listOfInts = new List<int> { 1, 2, 3, 4, 5 });
+
+            "When the method is called with the variable"
+                .x(() => fake.Invoke(listOfInts));
+
+            "And the variable is mutated"
+                .x(() => listOfInts.Add(6));
+
+            "And the method is called with the variable again"
+                .x(() => fake.Invoke(listOfInts));
+
+            "Then the captured arguments instance's values match the input at the time of the calls"
+                .x(() => capturedArgument.Values.Should().BeEquivalentTo(
+                    new[] { 1, 2, 3, 4, 5 }, new[] { 1, 2, 3, 4, 5, 6 }));
+        }
+
+        [Scenario]
+        public static void CaptureTransformedArgument(
+            Action<IList<int>> fake, IList<int> listOfInts, CapturedArgument<IList<int>, string> capturedArgument)
+        {
+            "Given a fake"
+                .x(() => fake = A.Fake<Action<IList<int>>>());
+
+            "And a capturedArgument instance"
+                .x(() => capturedArgument = new CapturedArgument<IList<int>, string>(l => string.Join(" ", l!)));
+
+            "And a fake method is configured to capture its argument to that instance"
+                .x(() => A.CallTo(() => fake.Invoke(A<IList<int>>.That.IsCapturedTo(capturedArgument)._))
+                            .DoesNothing());
+
+            "And mutable variable that will be input to the method"
+                .x(() => listOfInts = new List<int> { 1, 2, 3, 4, 5 });
+
+            "When the method is called with the variable"
+                .x(() => fake.Invoke(listOfInts));
+
+            "And the variable is mutated"
+                .x(() => listOfInts.Add(6));
+
+            "And the method is called with the variable again"
+                .x(() => fake.Invoke(listOfInts));
+
+            "Then the captured arguments instance's values match the input at the time of the calls"
+                .x(() => capturedArgument.Values.Should().BeEquivalentTo("1 2 3 4 5", "1 2 3 4 5 6"));
         }
     }
 }

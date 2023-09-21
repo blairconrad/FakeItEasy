@@ -12,6 +12,10 @@ namespace FakeItEasy
         /// <summary>
         /// Specifies where to capture argument values to.
         /// </summary>
+        /// <typeparam name="TCap">
+        ///   The type of argument value to capture. <paramref name="capturedArgument"/> will perform the
+        ///   transformation from <typeparamref name="T"/> to <c>TCap</c>.
+        /// </typeparam>
         /// <param name="capturedArgument">Where to capture the argument values to.</param>
         /// <returns>A configuration object that may be used to further constrain the supplied argument.</returns>
         /// <remarks>
@@ -20,6 +24,6 @@ namespace FakeItEasy
         /// values are only captured if the call is triggered. If an incoming call does not match what's
         /// configured for the method or property, no arguments are captured.
         /// </remarks>
-        ICapturingArgumentConstraintManager<T> IsCapturedTo(CapturedArgument<T> capturedArgument);
+        ICapturingArgumentConstraintManager<T> IsCapturedTo<TCap>(CapturedArgument<T, TCap> capturedArgument);
     }
 }
