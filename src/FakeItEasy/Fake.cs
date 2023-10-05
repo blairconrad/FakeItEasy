@@ -4,6 +4,10 @@ namespace FakeItEasy
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Reflection;
+    using FakeItEasy.Configuration;
     using FakeItEasy.Core;
 
     /// <summary>
@@ -11,6 +15,11 @@ namespace FakeItEasy
     /// </summary>
     public static class Fake
     {
+        public interface IBLAH<T>
+        {
+            IEnumerable<T?> CapturedBy(Expression<Action> expr);
+        }
+
         private static readonly IFakeManagerAccessor FakeManagerAccessor = ServiceLocator.Resolve<IFakeManagerAccessor>();
 
         /// <summary>
@@ -95,6 +104,46 @@ namespace FakeItEasy
             Guard.AgainstNull(potentialFake);
 
             return TryGetFakeManager(potentialFake, out _);
+        }
+
+        public static IEnumerable<ArgumentCollection> GetArgumentsCapturedBy(Expression<Action> expr)
+        {
+            if (expr.Body is MethodCallExpression methodCall)
+            {
+                var objectExpr = methodCall.Object;
+                if (objectExpr is MemberExpression member)
+                {
+                    var m = member.Evaluate();
+
+                    return GetCalls(m).Matching(expr).Select(c => c.Arguments);
+                }
+            }
+
+            return Enumerable.Empty<ArgumentCollection>();
+        }
+
+        public static IBLAH<T> GetArgumentValues<T>(int index) => new BLAH<T>(index);
+
+        public static IBLAH<T> GetArgumentValues<T>(string argumentName) => new BLAHString<T>(argumentName);
+
+        private class BLAH<T> : IBLAH<T>
+        {
+            private readonly int index;
+
+            public BLAH(int index) => this.index = index;
+
+            public IEnumerable<T?> CapturedBy(Expression<Action> expr) =>
+                GetArgumentsCapturedBy(expr).Get<T>(this.index);
+        }
+
+        private class BLAHString<T> : IBLAH<T>
+        {
+            private readonly string argumentName;
+
+            public BLAHString(string argumentName) => this.argumentName = argumentName;
+
+            public IEnumerable<T?> CapturedBy(Expression<Action> expr) =>
+                GetArgumentsCapturedBy(expr).Get<T>(this.argumentName);
         }
     }
 }

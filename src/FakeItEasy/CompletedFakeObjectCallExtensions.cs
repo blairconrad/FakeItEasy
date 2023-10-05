@@ -37,5 +37,20 @@ namespace FakeItEasy
                 where matcher.Matches(call)
                 select call;
         }
+
+        public static IEnumerable<ICompletedFakeObjectCall> Matching(this IEnumerable<ICompletedFakeObjectCall> calls, Expression<Action> callSpecification)
+        {
+            Guard.AgainstNull(calls);
+            Guard.AgainstNull(callSpecification);
+
+            var factory = ServiceLocator.Resolve<IExpressionCallMatcherFactory>();
+            var callExpressionParser = ServiceLocator.Resolve<ICallExpressionParser>();
+            var matcher = factory.CreateCallMatcher(callExpressionParser.Parse(callSpecification));
+
+            return
+                from call in calls
+                where matcher.Matches(call)
+                select call;
+        }
     }
 }
