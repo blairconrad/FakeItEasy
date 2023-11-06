@@ -101,6 +101,35 @@ namespace FakeItEasy.Specs
         }
 
         [Scenario]
+        public static void MatchingCallsWithMatchesMutableArguments(
+            Action<IList<int>> fake,
+            IEnumerable<ICompletedFakeObjectCall> completedCalls,
+            IEnumerable<ICompletedFakeObjectCall> matchedCalls)
+        {
+            "Given a Fake"
+                .x(() => fake = A.Fake<Action<IList<int>>>());
+
+            "And I make several calls to the Fake while mutating the argument between"
+                .x(() =>
+                {
+                    var arg = new List<int> { 1, 2, 3 };
+                    fake.Invoke(arg);
+                    arg.RemoveAt(0);
+                    fake.Invoke(arg);
+                });
+
+            "And I use the static Fake class to get the calls made on the Fake"
+                .x(() => completedCalls = Fake.GetCalls(fake));
+
+            "When I use Matching to find calls to a method with a match"
+                .x(() => matchedCalls = completedCalls
+                .Matching<Action<IList<int>>>(c => c.Invoke(An<IList<int>>.That.Matches(l => l.Count == 2))));
+
+            "Then it finds only the matching call"
+                .x(() => matchedCalls.Should().HaveCount(1));
+        }
+
+        [Scenario]
         public static void ClearRecordedCalls(IFoo fake)
         {
             "Given a Fake"
