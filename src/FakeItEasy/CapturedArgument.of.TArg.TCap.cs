@@ -2,6 +2,8 @@ namespace FakeItEasy
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
 
     /// <summary>
@@ -23,6 +25,24 @@ namespace FakeItEasy
         ///   to store a copy that will not be modified.
         /// </param>
         public CapturedArgument(Func<TArg, TCap> freezer) => this.freezer = Guard.AgainstNull(freezer);
+
+        public INegatableArgumentConstraintManager<TArg> That => A<TArg>.That.IsCapturedTo(this).And;
+
+        /// <summary>
+        /// Gets a constraint that considers any value of an argument as valid.
+        /// </summary>
+        /// <remarks>This is a shortcut for the "Ignored"-property.</remarks>
+        [SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "But it's kinda cool right?")]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [CLSCompliant(false)]
+#pragma warning disable SA1300 // Element must begin with upper-case letter
+        public TArg _ => this.Ignored;
+#pragma warning restore SA1300 // Element must begin with upper-case letter
+
+        /// <summary>
+        /// Gets a constraint that considers any value of an argument as valid.
+        /// </summary>
+        public TArg Ignored => this.That.Matches(x => true, x => x.Write(nameof(this.Ignored)));
 
         /// <summary>
         /// Gets the captured values.

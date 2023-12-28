@@ -20,7 +20,7 @@ namespace FakeItEasy.Specs
                 .x(() => capturedArgument = new CapturedArgument<int>());
 
             "And a fake method is configured to capture its argument to that instance"
-                .x(() => A.CallTo(() => fake.Invoke(A<int>.That.IsCapturedTo(capturedArgument)._))
+                .x(() => A.CallTo(() => fake.Invoke(capturedArgument._))
                             .DoesNothing());
 
             "When the method is called"
@@ -40,7 +40,7 @@ namespace FakeItEasy.Specs
                 .x(() => capturedArgument = new CapturedArgument<int>());
 
             "And a fake method is configured to capture its argument to that instance"
-                .x(() => A.CallTo(() => fake.Invoke(An<int>.That.IsCapturedTo(capturedArgument).Ignored))
+                .x(() => A.CallTo(() => fake.Invoke(capturedArgument.Ignored))
                             .DoesNothing());
 
             "When the method is called"
@@ -65,7 +65,7 @@ namespace FakeItEasy.Specs
 
             "When we assert that the call must've happened with a capturing argument and another non-matching argument"
                 .x(() => exception = Record.Exception(
-                    () => A.CallTo(() => fake.Invoke(An<int>.That.IsCapturedTo(capturedArgument)._, 3))
+                    () => A.CallTo(() => fake.Invoke(capturedArgument._, 3))
                             .MustHaveHappened()));
 
             "Then an exception is thrown, indicating that there was no constraint on the argument"
@@ -91,7 +91,7 @@ namespace FakeItEasy.Specs
                 .x(() => capturedArgument = new CapturedArgument<int>());
 
             "And a fake method with 2 parameters is configured to capture an argument to that instance"
-                .x(() => A.CallTo(() => fake.Invoke(An<int>.That.IsCapturedTo(capturedArgument)._, "matching"))
+                .x(() => A.CallTo(() => fake.Invoke(capturedArgument._, "matching"))
                             .DoesNothing());
 
             "When the method is called with non-matching arguments"
@@ -112,7 +112,7 @@ namespace FakeItEasy.Specs
                 .x(() => capturedArgument = new CapturedArgument<int>());
 
             "And a fake method is configured to capture an argument to that instance"
-                .x(() => A.CallTo(() => fake.Invoke(An<int>.That.IsCapturedTo(capturedArgument).Ignored, "matching"))
+                .x(() => A.CallTo(() => fake.Invoke(capturedArgument.Ignored, "matching"))
                             .DoesNothing());
 
             "When the method is called with non-matching arguments"
@@ -137,7 +137,7 @@ namespace FakeItEasy.Specs
                 .x(() => capturedArgument = new CapturedArgument<int>());
 
             "And a fake method is configured to capture its argument to that instance"
-                .x(() => A.CallTo(() => fake.Invoke(A<int>.That.IsCapturedTo(capturedArgument)._))
+                .x(() => A.CallTo(() => fake.Invoke(capturedArgument._))
                             .DoesNothing());
 
             "When the method is called"
@@ -164,7 +164,7 @@ namespace FakeItEasy.Specs
 
             "And a fake method is configured to capture arguments bigger than 10"
                 .x(() => A.CallTo(() =>
-                        fake.Invoke(A<int>.That.IsCapturedTo(capturedArgument).And.IsGreaterThan(10)))
+                        fake.Invoke(capturedArgument.That.IsGreaterThan(10)))
                     .DoesNothing());
 
             "When the method is called with a few values"
@@ -194,7 +194,7 @@ namespace FakeItEasy.Specs
 
             "And a fake method is configured to capture arguments except those bigger than 10"
                 .x(() => A.CallTo(() =>
-                        fake.Invoke(A<int>.That.IsCapturedTo(capturedArgument).And.Not.IsGreaterThan(10)))
+                        fake.Invoke(capturedArgument.That.Not.IsGreaterThan(10)))
                     .DoesNothing());
 
             "When the method is called with a few values"
@@ -229,7 +229,7 @@ namespace FakeItEasy.Specs
             "When we assert that the call must've happened with a constrained capturing argument and another non-matching argument"
                 .x(() => exception = Record.Exception(
                     () => A.CallTo(() =>
-                            fake.Invoke(An<int>.That.IsCapturedTo(capturedArgument).And.IsGreaterThan(0), -3))
+                            fake.Invoke(capturedArgument.That.IsGreaterThan(0), -3))
                         .MustHaveHappened()));
 
             "Then an exception is thrown, indicating the constraint on the argument"
@@ -260,7 +260,7 @@ namespace FakeItEasy.Specs
             "When we assert that the call must've happened with a negated constrained capturing argument and another non-matching argument"
                 .x(() => exception = Record.Exception(
                     () => A.CallTo(() =>
-                            fake.Invoke(An<int>.That.IsCapturedTo(capturedArgument).And.Not.IsGreaterThan(0), -3))
+                            fake.Invoke(capturedArgument.That.Not.IsGreaterThan(0), -3))
                         .MustHaveHappened()));
 
             "Then an exception is thrown, indicating the constraint on the argument"
@@ -286,7 +286,7 @@ namespace FakeItEasy.Specs
                 .x(() => capturedArgument = new CapturedArgument<IList<int>>(Enumerable.ToList));
 
             "And a fake method is configured to capture its argument to that instance"
-                .x(() => A.CallTo(() => fake.Invoke(A<IList<int>>.That.IsCapturedTo(capturedArgument)._))
+                .x(() => A.CallTo(() => fake.Invoke(capturedArgument._))
                             .DoesNothing());
 
             "And mutable variable that will be input to the method"
@@ -308,8 +308,7 @@ namespace FakeItEasy.Specs
 
         [Scenario]
         public static void CaptureTransformedArgument(
-            Action<IList<int>> fake, IList<int> listOfInts, CapturedArgument<IList<int>, string> capturedArgument)
-        {
+            Action<IList<int>> fake, IList<int> listOfInts, CapturedArgument<IList<int>, string> capturedArgument)        {
             "Given a fake"
                 .x(() => fake = A.Fake<Action<IList<int>>>());
 
@@ -317,8 +316,7 @@ namespace FakeItEasy.Specs
                 .x(() => capturedArgument = new CapturedArgument<IList<int>, string>(l => string.Join(" ", l!)));
 
             "And a fake method is configured to capture its argument to that instance"
-                .x(() => A.CallTo(() => fake.Invoke(A<IList<int>>.That.IsCapturedTo(capturedArgument)._))
-                            .DoesNothing());
+                .x(() => A.CallTo(() => fake.Invoke(capturedArgument._)).DoesNothing());
 
             "And mutable variable that will be input to the method"
                 .x(() => listOfInts = new List<int> { 1, 2, 3, 4, 5 });
