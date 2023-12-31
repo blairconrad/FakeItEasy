@@ -161,6 +161,21 @@ namespace FakeItEasy
         public static TInterface Invokes<TInterface, T1, T2, T3, T4, T5, T6, T7>(this FakeItEasy.Configuration.ICallbackConfiguration<TInterface> configuration, System.Action<T1, T2, T3, T4, T5, T6, T7> actionToInvoke) { }
         public static TInterface Invokes<TInterface, T1, T2, T3, T4, T5, T6, T7, T8>(this FakeItEasy.Configuration.ICallbackConfiguration<TInterface> configuration, System.Action<T1, T2, T3, T4, T5, T6, T7, T8> actionToInvoke) { }
     }
+    public class Captured<T> : FakeItEasy.Captured<T, T>
+    {
+        public Captured() { }
+        public Captured(System.Func<T, T> freezer) { }
+    }
+    public class Captured<TArgument, TCapture>
+    {
+        public Captured(System.Func<TArgument, TCapture> freezer) { }
+        public TArgument Ignored { get; }
+        public FakeItEasy.INegatableArgumentConstraintManager<TArgument> That { get; }
+        public System.Collections.Generic.IReadOnlyList<TCapture> Values { get; }
+        [System.CLSCompliant(false)]
+        public TArgument _ { get; }
+        public TCapture GetLastValue() { }
+    }
     public static class CompletedFakeObjectCallExtensions
     {
         public static System.Collections.Generic.IEnumerable<FakeItEasy.Core.ICompletedFakeObjectCall> Matching<TFake>(this System.Collections.Generic.IEnumerable<FakeItEasy.Core.ICompletedFakeObjectCall> calls, System.Linq.Expressions.Expression<System.Action<TFake>> callSpecification) { }

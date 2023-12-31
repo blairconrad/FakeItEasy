@@ -127,7 +127,9 @@ namespace FakeItEasy.Expressions
         private static bool IsBuiltInConstraintDefiningMember(MemberExpression node)
         {
             Type declaringType = GetGenericTypeDefinition(node.Member.DeclaringType!);
-            return declaringType == typeof(A<>) || declaringType == typeof(An<>);
+            return declaringType == typeof(A<>) ||
+                declaringType == typeof(An<>) ||
+                declaringType == typeof(Captured<>);
         }
 
         private static Type GetGenericTypeDefinition(Type type)
