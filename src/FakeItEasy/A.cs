@@ -183,5 +183,46 @@ namespace FakeItEasy
         {
             return CallTo(fake).MatchingEventAction(fake, action);
         }
+
+        /// <summary>
+        /// Obtains an object that can be used to capture and later examine <typeparamref name="TArgument"/> instances passed to
+        /// a fake method call.
+        /// </summary>
+        /// <typeparam name="TArgument">The type of argument to capture.</typeparam>
+        /// <returns>
+        /// An object that can be used to capture and later examine arguments passed to a fake method call.
+        /// </returns>
+        public static Captured<TArgument> Captured<TArgument>() => new(arg => arg);
+
+        /// <summary>
+        /// Obtains an object that can be used to capture and later examine <typeparamref name="TArgument"/> instances passed to
+        /// a fake method call.
+        /// </summary>
+        /// <typeparam name="TArgument">The type of argument to capture.</typeparam>
+        /// <param name="freezer">
+        /// Transforms incoming argument values before storing the result.
+        /// Useful when argument values may be mutated between calls and you want
+        /// to store a copy that will not be modified.
+        /// </param>
+        /// <returns>
+        /// An object that can be used to capture and later examine arguments passed to a fake method call.
+        /// </returns>
+        public static Captured<TArgument> Captured<TArgument>(Func<TArgument, TArgument> freezer) => new(freezer);
+
+        /// <summary>
+        /// Obtains an object that can be used to capture <typeparamref name="TArgument"/> instances passed to
+        /// a fake method call as <typeparamref name="TCapture"/> instances.
+        /// </summary>
+        /// <typeparam name="TArgument">The type of argument to capture.</typeparam>
+        /// <typeparam name="TCapture">The of the transformed argument value to capture.</typeparam>
+        /// <param name="freezer">
+        /// Transforms incoming argument values before storing the result.
+        /// Useful when argument values may be mutated between calls and you want
+        /// to store a copy that will not be modified.
+        /// </param>
+        /// <returns>
+        /// An object that can be used to capture and later examine arguments passed to a fake method call.
+        /// </returns>
+        public static Captured<TArgument, TCapture> Captured<TArgument, TCapture>(Func<TArgument, TCapture> freezer) => new(freezer);
     }
 }

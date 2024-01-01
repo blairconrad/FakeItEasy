@@ -17,7 +17,7 @@ namespace FakeItEasy.Specs
                 .x(() => fake = A.Fake<Action<int>>());
 
             "And a captured argument instance"
-                .x(() => capturedArgument = new Captured<int>());
+                .x(() => capturedArgument = A.Captured<int>());
 
             "And a fake method is configured to capture its argument to that instance"
                 .x(() => A.CallTo(() => fake.Invoke(capturedArgument._))
@@ -38,7 +38,7 @@ namespace FakeItEasy.Specs
                 .x(() => fake = A.Fake<Action<int, int>>());
 
             "And a captured argument instance"
-                .x(() => capturedArgument = new Captured<int>());
+                .x(() => capturedArgument = A.Captured<int>());
 
             "And a method on the fake is called"
                 .x(() => fake.Invoke(354897, -3));
@@ -68,7 +68,7 @@ namespace FakeItEasy.Specs
                 .x(() => fake = A.Fake<Action<int, string>>());
 
             "And a captured argument instance"
-                .x(() => capturedArgument = new Captured<int>());
+                .x(() => capturedArgument = A.Captured<int>());
 
             "And a fake method with 2 parameters is configured to capture an argument to that instance"
                 .x(() => A.CallTo(() => fake.Invoke(capturedArgument._, "matching"))
@@ -89,7 +89,7 @@ namespace FakeItEasy.Specs
                 .x(() => fake = A.Fake<Action<int, string>>());
 
             "And a captured argument instance"
-                .x(() => capturedArgument = new Captured<int>());
+                .x(() => capturedArgument = A.Captured<int>());
 
             "And a fake method is configured to capture an argument to that instance"
                 .x(() => A.CallTo(() => fake.Invoke(capturedArgument.Ignored, "matching"))
@@ -114,7 +114,7 @@ namespace FakeItEasy.Specs
                 .x(() => fake = A.Fake<Action<int>>());
 
             "And a captured argument instance"
-                .x(() => capturedArgument = new Captured<int>());
+                .x(() => capturedArgument = A.Captured<int>());
 
             "And a fake method is configured to capture its argument to that instance"
                 .x(() => A.CallTo(() => fake.Invoke(capturedArgument._))
@@ -140,7 +140,7 @@ namespace FakeItEasy.Specs
                 .x(() => fake = A.Fake<Action<int>>());
 
             "And a captured argument instance"
-                .x(() => capturedArgument = new Captured<int>());
+                .x(() => capturedArgument = A.Captured<int>());
 
             "And a fake method is configured to capture arguments bigger than 10"
                 .x(() => A.CallTo(() =>
@@ -170,7 +170,7 @@ namespace FakeItEasy.Specs
                 .x(() => fake = A.Fake<Action<int>>());
 
             "And a captured argument instance"
-                .x(() => capturedArgument = new Captured<int>());
+                .x(() => capturedArgument = A.Captured<int>());
 
             "And a fake method is configured to capture arguments except those bigger than 10"
                 .x(() => A.CallTo(() =>
@@ -201,7 +201,7 @@ namespace FakeItEasy.Specs
                 .x(() => fake = A.Fake<Action<int, int>>());
 
             "And a captured argument instance"
-                .x(() => capturedArgument = new Captured<int>());
+                .x(() => capturedArgument = A.Captured<int>());
 
             "And a method on the fake is called"
                 .x(() => fake.Invoke(-354897, 3));
@@ -232,7 +232,7 @@ namespace FakeItEasy.Specs
                 .x(() => fake = A.Fake<Action<int, int>>());
 
             "And a captured argument instance"
-                .x(() => capturedArgument = new Captured<int>());
+                .x(() => capturedArgument = A.Captured<int>());
 
             "And a method on the fake is called"
                 .x(() => fake.Invoke(-354897, 3));
@@ -263,7 +263,7 @@ namespace FakeItEasy.Specs
                 .x(() => fake = A.Fake<Action<IList<int>>>());
 
             "And a captured argument instance"
-                .x(() => capturedArgument = new Captured<IList<int>>(l => l.ToList()));
+                .x(() => capturedArgument = A.Captured<IList<int>>(l => l.ToList()));
 
             "And a fake method is configured to capture its argument to that instance"
                 .x(() => A.CallTo(() => fake.Invoke(capturedArgument._))
@@ -294,7 +294,7 @@ namespace FakeItEasy.Specs
                 .x(() => fake = A.Fake<Action<IList<int>>>());
 
             "And a captured argument instance"
-                .x(() => capturedArgument = new Captured<IList<int>, string>(l => string.Join(" ", l)));
+                .x(() => capturedArgument = A.Captured<IList<int>, string>(l => string.Join(" ", l)));
 
             "And a fake method is configured to capture its argument to that instance"
                 .x(() => A.CallTo(() => fake.Invoke(capturedArgument._)).DoesNothing());

@@ -10,7 +10,7 @@ namespace FakeItEasy.Tests
         public void Constructor_should_be_null_guarded()
         {
 #pragma warning disable CA1806 // Do not ignore method results
-            Expression<Action> call = () => new Captured<string>(s => s);
+            Expression<Action> call = () => A.Captured<string>(s => s);
 #pragma warning restore CA1806 // Do not ignore method results
             call.Should().BeNullGuarded();
         }

@@ -24,7 +24,7 @@ namespace FakeItEasy
         ///   Useful when argument values may be mutated between calls and you want
         ///   to store a copy that will not be modified.
         /// </param>
-        public Captured(Func<TArgument, TCapture> freezer) => this.freezer = Guard.AgainstNull(freezer);
+        internal Captured(Func<TArgument, TCapture> freezer) => this.freezer = Guard.AgainstNull(freezer);
 
         /// <summary>
         /// Gets an argument constraint object that will be used to constrain this captured method call argument.

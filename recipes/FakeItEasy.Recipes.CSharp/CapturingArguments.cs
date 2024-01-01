@@ -20,7 +20,7 @@ public class CapturingArguments
     {
         //// --8<-- [start:SimpleCapture]
         // Arrange
-        var capturedMessage = new Captured<string>();
+        var capturedMessage = A.Captured<string>();
 
         var logger = A.Fake<IListLogger>();
         A.CallTo(() => logger.Log(
@@ -50,7 +50,7 @@ public class CapturingArguments
     {
         //// --8<-- [start:ConstrainedCapture]
         // Arrange
-        var capturedMessage = new Captured<string>();
+        var capturedMessage = A.Captured<string>();
 
         var logger = A.Fake<IListLogger>();
         A.CallTo(() => logger.Log(
@@ -79,7 +79,7 @@ public class CapturingArguments
         {
             //// --8<-- [start:NaivelyCaptureMutatedList]
             // Arrange
-            var capturedSummands = new Captured<IEnumerable<int>>();
+            var capturedSummands = A.Captured<IEnumerable<int>>();
 
             var logger = A.Fake<IListLogger>();
             A.CallTo(() => logger.Log(
@@ -113,7 +113,7 @@ public class CapturingArguments
     {
         //// --8<-- [start:CaptureCopiedMutatedList]
         // Arrange
-        var capturedSummands = new Captured<IEnumerable<int>>(l => l.ToList());
+        var capturedSummands = A.Captured<IEnumerable<int>>(l => l.ToList());
 
         var logger = A.Fake<IListLogger>();
         A.CallTo(() => logger.Log(
@@ -141,7 +141,7 @@ public class CapturingArguments
     {
         //// --8<-- [start:CaptureCopiedMutatedListToNewType]
         // Arrange
-        var capturedSummands = new Captured<IEnumerable<int>, string>(
+        var capturedSummands = A.Captured<IEnumerable<int>, string>(
             l => string.Join(" + ", l));
 
         var logger = A.Fake<IListLogger>();
