@@ -361,6 +361,38 @@ namespace FakeItEasy.Specs
         }
 
         [Scenario]
+        public static void ResetToInitialConfigurationRemovesInterceptors(IFoo fake, Listener initialListener, Listener additionalListener)
+        {
+            "Given an intereceptor listener"
+                .x(() => initialListener = new Listener());
+
+            "And another intereceptor listener"
+                .x(() => additionalListener = new Listener());
+
+            "And a Fake that's initially listened to by the first listener"
+                .x(() => fake = A.Fake<IFoo>(options => options
+                    .ConfigureFake(f => Fake.GetFakeManager(f).AddInterceptionListener(initialListener))));
+
+            "And I hvae the second listener listen as well"
+                .x(() => Fake.GetFakeManager(fake).AddInterceptionListener(additionalListener));
+
+            "And I call a method on the Fake"
+                .x(() => fake.AnotherMethod("before reset"));
+
+            "When I reset the configuration to its initial state"
+                .x(() => Fake.ResetToInitialConfiguration(fake));
+
+            "And I call a method on the Fake again"
+                .x(() => fake.AnotherMethod("after reset"));
+
+            "Then the initial listener will have been fired twice"
+                .x(() => initialListener.CapturedArgs.Should().BeEquivalentTo("before reset", "after reset"));
+
+            "And then the additional listener will have fired once"
+                .x(() => additionalListener.CapturedArgs.Should().BeEquivalentTo("before reset"));
+        }
+
+        [Scenario]
         public static void RecordedCallHasReturnValue(
             IFoo fake,
             object returnValue,
@@ -491,6 +523,18 @@ namespace FakeItEasy.Specs
                 this.AutoPropertySetDuringConstructorCall = "value set during constructor call";
 
             public virtual string AutoPropertySetDuringConstructorCall { get; set; }
+        }
+
+        public class Listener : IInterceptionListener
+        {
+            public List<string> CapturedArgs { get; } = new List<string>();
+
+            public void OnAfterCallIntercepted(ICompletedFakeObjectCall interceptedCall)
+            {
+            }
+
+            public void OnBeforeCallIntercepted(IFakeObjectCall interceptedCall) =>
+                this.CapturedArgs.Add(interceptedCall.GetArgument<string>(0)!);
         }
     }
 }

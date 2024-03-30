@@ -33,6 +33,7 @@ namespace FakeItEasy.Core
         private EventCallHandler? initialEventCallHandler;
 
         private CallRuleMetadata[]? initialUserRules;
+        private IInterceptionListener[]? initialInterceptionListeners;
 
         private ConcurrentQueue<CompletedFakeObjectCall> recordedCalls;
 
@@ -223,6 +224,12 @@ namespace FakeItEasy.Core
                 {
                     this.allUserRules.AddLast(rule);
                 }
+
+                this.interceptionListeners.Clear();
+                foreach (var listener in this.initialInterceptionListeners!)
+                {
+                    this.interceptionListeners.AddLast(listener);
+                }
             }
 
             this.eventCallHandler = this.initialEventCallHandler?.Clone();
@@ -267,11 +274,18 @@ namespace FakeItEasy.Core
             lock (this.allUserRules)
             {
                 this.initialUserRules = new CallRuleMetadata[this.allUserRules.Count];
-                int i = 0;
+                int ruleNumberi = 0;
                 foreach (var rule in this.allUserRules)
                 {
-                    this.initialUserRules[i++] = rule.Clone();
+                    this.initialUserRules[ruleNumberi++] = rule.Clone();
                 }
+            }
+
+            this.initialInterceptionListeners = new IInterceptionListener[this.interceptionListeners.Count];
+            int listenerNumber = 0;
+            foreach (var listener in this.interceptionListeners)
+            {
+                this.initialInterceptionListeners[listenerNumber++] = listener;
             }
 
             this.initialEventCallHandler = this.eventCallHandler?.Clone();
