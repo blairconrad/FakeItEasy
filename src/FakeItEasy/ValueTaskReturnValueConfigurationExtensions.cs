@@ -1,3 +1,4 @@
+#if !LACKS_VALUETASK
 namespace FakeItEasy
 {
     using System;
@@ -65,3 +66,4 @@ namespace FakeItEasy
         }
     }
 }
+#endif
