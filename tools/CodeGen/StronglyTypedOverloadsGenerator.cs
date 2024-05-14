@@ -35,7 +35,7 @@ public abstract class StronglyTypedOverloadsGenerator : ISourceGenerator
 
             """;
         context.AddSource(
-            this.GetType().Name.Replace("Generator", ".StronglyTyped.cs"),
+            this.GetType().Name.Replace("Generator", ".g.cs"),
             source);
     }
 
