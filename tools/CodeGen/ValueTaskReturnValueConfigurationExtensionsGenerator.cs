@@ -5,10 +5,14 @@ using Microsoft.CodeAnalysis;
 [Generator]
 public class ValueTaskReturnValueConfigurationExtensionsGenerator : StronglyTypedOverloadsGenerator
 {
+    protected override bool IsApplicable(GeneratorExecutionContext context)
+    {
+        return IsTypeInTargetAssembly(context, "FakeItEasy.ValueTaskReturnValueConfigurationExtensions");
+    }
+
     protected override string GenerateSource()
     {
         return $$"""
-            #if !LACKS_VALUETASK
             namespace FakeItEasy
             {
                 using System;
@@ -23,7 +27,6 @@ public class ValueTaskReturnValueConfigurationExtensionsGenerator : StronglyType
             {{Indent(2, OverloadMethod(GenerateMethodImplementation))}}
                 }
             }
-            #endif
             """;
     }
 

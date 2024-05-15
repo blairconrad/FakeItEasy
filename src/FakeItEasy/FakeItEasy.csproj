@@ -46,7 +46,7 @@
   <!-- Pre-.NET Standard 2.1 -->
 
   <PropertyGroup Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'netstandard2.1'))">
-    <DefineConstants>$(DefineConstants);LACKS_NULLABLE_ATTRIBUTES;LACKS_STRING_CONTAINS_COMPARISONTYPE;LACKS_CALLERARGUMENTEXPRESSION;LACKS_VALUETASK</DefineConstants>
+    <DefineConstants>$(DefineConstants);LACKS_NULLABLE_ATTRIBUTES;LACKS_STRING_CONTAINS_COMPARISONTYPE;LACKS_CALLERARGUMENTEXPRESSION</DefineConstants>
   </PropertyGroup>
 
   <!-- .NET Framework -->
@@ -54,5 +54,10 @@
   <PropertyGroup Condition="$([MSBuild]::GetTargetFrameworkIdentifier('$(TargetFramework)')) == '.NETFramework'">
     <DefineConstants>$(DefineConstants);LACKS_ARRAY_EMPTY</DefineConstants>
   </PropertyGroup>
+
+  <ItemGroup Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'netstandard2.1'))">
+    <Compile Remove="ValueTaskReturnValueConfigurationExtensions.cs" />
+    <Compile Remove="ValueTaskAsyncReturnValueConfigurationExtensions.cs" />
+  </ItemGroup>
 
 </Project>
