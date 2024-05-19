@@ -17,18 +17,22 @@ internal class FailedCreationResult : CreationResult
         Type type,
         CreationMode creationMode,
         IList<string>? reasonsForFailure = null,
-        IList<ResolvedConstructor>? consideredConstructors = null)
+        IList<ResolvedConstructor>? consideredConstructors = null,
+        bool isBlocking = false)
     {
         this.type = type;
         this.creationMode = creationMode;
         this.reasonsForFailure = reasonsForFailure;
         this.consideredConstructors = consideredConstructors;
+        this.IsBlocking = isBlocking;
     }
 
     public override bool WasSuccessful => false;
 
     public override object Result =>
         throw this.creationMode.CreateException(this.GetFailedToCreateResultMessage());
+
+    public bool IsBlocking { get; }
 
     public static CreationResult ForDummy(Type type, string reasonForFailure) =>
         new FailedCreationResult(type, CreationMode.Dummy, reasonsForFailure: new List<string> { reasonForFailure });
@@ -41,6 +45,9 @@ internal class FailedCreationResult : CreationResult
 
     public static CreationResult ForFake(Type type, List<ResolvedConstructor> consideredConstructors) =>
         new FailedCreationResult(type, CreationMode.Fake, consideredConstructors: consideredConstructors);
+
+    public static CreationResult BlockingForDummy(Type type, string reasonForFailure) =>
+        new FailedCreationResult(type, CreationMode.Dummy, reasonsForFailure: new List<string> { reasonForFailure }, isBlocking: true);
 
     /// <summary>
     /// Returns a failed creation result combining multiple results.
