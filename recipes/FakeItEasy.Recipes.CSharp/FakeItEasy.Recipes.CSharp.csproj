@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(RecipesTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(TestTargetFrameworks)</TargetFrameworks>
     <AssemblyName>FakeItEasy.Recipes.CSharp</AssemblyName>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>

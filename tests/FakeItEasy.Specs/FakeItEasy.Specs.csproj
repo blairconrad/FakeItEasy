@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(SpecsTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(TestTargetFrameworks)</TargetFrameworks>
     <AssemblyName>FakeItEasy.Specs</AssemblyName>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>

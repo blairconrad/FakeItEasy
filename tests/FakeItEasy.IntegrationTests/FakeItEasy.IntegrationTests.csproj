@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(IntegrationTestsTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(TestTargetFrameworks)</TargetFrameworks>
     <AssemblyName>FakeItEasy.IntegrationTests</AssemblyName>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>

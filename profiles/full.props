@@ -13,13 +13,6 @@
     <TestTargetFrameworks>net6.0;net8.0</TestTargetFrameworks>
   </PropertyGroup>
   <PropertyGroup>
-    <FakeItEasyTargetFrameworks>$(LibraryTargetFrameworks)</FakeItEasyTargetFrameworks>
-    <ValueTaskExtensionsTargetFrameworks>$(LibraryTargetFrameworks)</ValueTaskExtensionsTargetFrameworks>
-    <TestHelpersTargetFrameworks>$(LibraryTargetFrameworks)</TestHelpersTargetFrameworks>
     <ApprovalTestsTargetFrameworks>net8.0</ApprovalTestsTargetFrameworks>
-    <SpecsTargetFrameworks>$(TestTargetFrameworks)</SpecsTargetFrameworks>
-    <IntegrationTestsTargetFrameworks>$(TestTargetFrameworks)</IntegrationTestsTargetFrameworks>
-    <UnitTestsTargetFrameworks>$(TestTargetFrameworks)</UnitTestsTargetFrameworks>
-    <RecipesTargetFrameworks>$(TestTargetFrameworks)</RecipesTargetFrameworks>
   </PropertyGroup>
 </Project>

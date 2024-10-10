@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(IntegrationTestsTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(TestTargetFrameworks)</TargetFrameworks>
     <NoWarn>$(NoWarn),AD0001</NoWarn>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>

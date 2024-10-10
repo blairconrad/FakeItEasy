@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(ValueTaskExtensionsTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(LibraryTargetFrameworks)</TargetFrameworks>
     <SignAssembly>true</SignAssembly>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <BeforePack>AddTfmPlaceholders;$(BeforePackOn)</BeforePack>
