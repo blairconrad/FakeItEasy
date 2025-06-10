@@ -20,6 +20,10 @@ ghp-import==2.1.0
     # via mkdocs
 idna==3.7
     # via requests
+importlib-metadata==8.7.0
+    # via
+    #   markdown
+    #   mkdocs
 jinja2==3.1.4
     # via
     #   mike
@@ -65,7 +69,7 @@ pyyaml-env-tag==0.1
     # via mkdocs
 regex==2024.5.15
     # via mkdocs-material
-requests==2.32.1
+requests==2.32.4
     # via
     #   linkchecker
     #   mkdocs-material
@@ -79,3 +83,5 @@ verspec==0.1.0
     # via mike
 watchdog==4.0.0
     # via mkdocs
+zipp==3.23.0
+    # via importlib-metadata
